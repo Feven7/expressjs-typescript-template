@@ -14,22 +14,26 @@ function bootstrap() {
     app.use(helmet());
 
     const limiter = rateLimit({
-        windowMs: 15 * 60 * 1000, // 15 minutes
-        max: 100 // limit each IP to 100 requests per windowMs
+        windowMs: 15 * 60, // 1 minutes
+        max: 50 // limit each IP to 100 requests per windowMs
     });
 
     app.use(limiter);
 
-    app.use(cookieParser());
     app.use(session({
         secret: `${process.env.SESSION_SECRET}`,
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            maxAge: 1000 * 60 * 60 * 24 * 30 * 6
+        }
     }))
 
     app.use(Express.json({
         limit: '50mb'
     }));
 
-    app.listen(`${process.env.token}`, () => {
+    app.listen(`${process.env.PORT}`, () => {
         console.log('Server is running on port 3000');
     });
 }
